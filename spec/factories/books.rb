@@ -9,6 +9,7 @@ FactoryGirl.define do
     publisher
     author
   end
+ 
   factory :ruby_on_rails_tutorial, class: Book do
     title 'Ruby on Rails Tutorial'
     subtitle 'Learn Web Development with Rails'
@@ -19,6 +20,7 @@ FactoryGirl.define do
     publisher_id nil
     association :author, factory: :michael_hartl
   end
+ 
   factory :agile_web_development, class: Book do
     title 'Agile Web Development with Rails 4'
     subtitle ''
@@ -28,6 +30,5 @@ FactoryGirl.define do
     released_on '2015-10-11'
     publisher
     association :author, factory: :sam_ruby
-    endV
   end
 end
