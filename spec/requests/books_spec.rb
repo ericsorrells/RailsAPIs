@@ -56,5 +56,77 @@ RSpec.describe "Books", type: :request do
         end
       end
     end # End of describe 'field picking'
+
+    describe 'pagination' do
+      context 'when asking for the first page' do
+        before { get('/api/books?page=1&per=2') }
+
+        it 'receives HTTP status 200' do
+          expect(response.status).to eq 200
+        end
+
+        it 'receives only two books' do
+          expect(json_body['data'].size).to eq 2
+        end
+
+        it 'receives a response with the Link header' do
+          expect(response.headers['Link'].split(', ').first).to eq(
+            '<http://www.example.com/api/books?page=2&per=2>; rel="next"'
+          )
+        end
+
+      context "when sending invalid 'page' and 'per' parameters" do
+        before { get('/api/books?page=fake&per=10') }
+
+          it 'receives HTTP status 400' do
+            expect(response.status).to eq 400
+          end
+
+          it 'receives an error' do
+            expect(json_body['error']).to_not be nil
+          end
+
+          it "receives 'page=fake' as an invalid param" do
+            expect(json_body['error']['invalid_params']).to eq 'page=fake'
+          end
+        end
+      end
+
+      context 'when asking for the second page' do
+        before { get('/api/books?page=2&per=2') }
+
+        it 'receives HTTP status 200' do
+          expect(response.status).to eq 200
+        end
+
+        it 'receives only one book' do
+          expect(json_body['data'].size).to eq 1
+        end
+      end
+    end # describe 'pagination' end
+
+    describe 'sorting' do
+      context 'with valid column name "id"' do
+        it 'sorts the books by "id desc"' do
+          get('/api/books?sort=id&dir=desc')
+          expect(json_body['data'].first['id']).to eq agile_web_dev.id
+          expect(json_body['data'].last['id']).to eq ruby_microscope.id
+        end end
+
+      context 'with invalid column name "fid"' do
+        it 'gets "400 Bad Request" back' do
+          get '/api/books?sort=fid&dir=asc'
+          expect(response.status).to eq 400
+        end
+      end
+
+      it 'receives an error' do
+        expect(json_body['error']).to_not be nil
+      end
+
+      it 'receives "sort=fid" as an invalid param' do
+        expect(json_body['error']['invalid_params']).to eq 'sort=fid'
+      end
+    end # describe 'sorting' end
   end
 end
