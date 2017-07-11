@@ -8,9 +8,10 @@ end
 gem 'carrierwave'
 gem 'carrierwave-base64'
 gem 'rails', '~> 5.0.3'
-gem 'sqlite3'
+gem 'pg'
 gem 'puma', '~> 3.0'
 gem 'kaminari'
+gem 'pg_search'
 # Use Rack CORS for handling Cross-Origin Resource Sharing (CORS), making cross-origin AJAX possible
 # gem 'rack-cors'
 
