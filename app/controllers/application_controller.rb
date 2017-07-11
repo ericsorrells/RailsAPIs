@@ -1,31 +1,42 @@
 class ApplicationController < ActionController::API
-  rescue_from QueryBuilderError, with: :query_builder_error
+  rescue_from QueryBuilderError, with: :builder_error
+  rescue_from RepresentationBuilderError, with: :builder_error
+  rescue_from ActiveRecord::RecordNotFound, with: :resource_not_found
 
   protected
-    def query_builder_error(error)
+
+    def builder_error(error)
       render status: 400, json: {
         error: {
+          type: error.class,
           message: error.message,
           invalid_params: error.invalid_params
         }
       }
     end
 
-    def paginate(scope)
-      paginator = Paginator.new(scope, request.query_parameters, current_url)
-      response.headers['Link'] = paginator.links
-      paginator.paginate
+    def orchestrate_query(scope, actions = :all)
+      QueryOrchestrator.new(scope: scope,
+                            params: params,
+                            request: request,
+                            response: response,
+                            actions: actions).run
     end
 
-    def current_url
-      request.base_url + request.path
+    def serialize(data)
+      { json: Alexandria::Serializer.new(data: data, params: params, actions: [:fields, :embeds]).to_json}
     end
 
-    def sort(scope)
-      Sorter.new(scope, params).sort
+    def resource_not_found
+      render(status: 404)
     end
 
-    def filter(scope)
-      Filter.new(scope, params.to_unsafe_hash).filter
+    def unprocessable_entity!(resource)
+      render status: :unprocessable_entity, json: {
+        error: {
+          message: "Invalid parameters for resource #{resource.class}.",
+          invalid_params: resource.errors
+        }
+      }
     end
 end

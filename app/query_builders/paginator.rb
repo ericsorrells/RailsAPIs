@@ -1,5 +1,6 @@
 class Paginator
   def initialize(scope, query_params, url)
+    puts 'PAGINATOR: Obj'
     @query_params = query_params
     @page         = validate_param!('page', 1)
     @per          = validate_param!('per', 10)

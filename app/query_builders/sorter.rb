@@ -2,6 +2,7 @@ class Sorter
   DIRECTIONS = %w(asc desc)
 
   def initialize(scope, params)
+    puts "SORT: Obj"
     @scope = scope
     @presenter = "#{@scope.model}Presenter".constantize
     @column = params[:sort]

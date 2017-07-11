@@ -2,6 +2,7 @@ class Filter
   PREDICATES = %w(eq cont notcont start end gt lt)
 
   def initialize(scope, params)
+    puts 'FILTER: Obj'
     @scope     = scope
     @presenter = "#{@scope.model}Presenter".constantize
     @filters   = params['q'] || {}

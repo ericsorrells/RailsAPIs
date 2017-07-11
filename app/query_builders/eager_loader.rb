@@ -1,5 +1,6 @@
 class EagerLoader
   def initialize(scope, params)
+    puts 'EAGER LOADER: Obj'
     @scope = scope
     @presenter = "#{@scope.model}Presenter".constantize
     @embed = params[:embed] ? params[:embed].split(',') : []
